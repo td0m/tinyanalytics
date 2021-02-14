@@ -9,8 +9,6 @@ CREATE TABLE visit(
   domain TEXT NOT NULL,
   path TEXT NOT NULL,
 
-  views INT NOT NULL DEFAULT 0,
-
   geo GEOGRAPHY,
   browser browser NOT NULL,
   platform platform NOT NULL,

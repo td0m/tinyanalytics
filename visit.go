@@ -8,15 +8,18 @@ import (
 // Visit model
 type Visit struct {
 	Time   time.Time
-	IP     net.HardwareAddr
+	IP     net.IP
 	Domain string
 	Path   string
-
-	Views int
 
 	Geo      Location
 	Browser  Browser
 	Platform Platform
+}
+
+// TODO: implement
+func (v Visit) Validate() error {
+	return nil
 }
 
 // ViewRow is a subset of Visit
