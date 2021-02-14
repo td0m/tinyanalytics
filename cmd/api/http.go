@@ -20,7 +20,7 @@ func initHTTP(svc *services) *chi.Mux {
 		api.Post("/login", userH.Login)
 
 		api.With(anyUser).Get("/protected", func(w http.ResponseWriter, r *http.Request) {
-			claims := svc.jwt.FromContext(r.Context())
+			claims := jwt.FromContext(r.Context())
 			fmt.Fprintln(w, "You are signed in as", claims)
 		})
 	})

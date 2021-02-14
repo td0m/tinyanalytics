@@ -46,7 +46,7 @@ func (s *Service) Middleware() func(http.Handler) http.Handler {
 	}).Handler
 }
 
-func (s *Service) FromContext(ctx context.Context) string {
+func FromContext(ctx context.Context) string {
 	token := ctx.Value("user").(*jwt.Token)
 	claims := token.Claims.(jwt.MapClaims)
 	return claims["sub"].(string)
