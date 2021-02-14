@@ -22,6 +22,9 @@ func initHTTP(svc *services) *chi.Mux {
 	visitH := visit.NewHTTP(svc.visit)
 
 	r.Route("/api", func(api chi.Router) {
+		r.Use(middleware.DefaultLogger)
+		r.Use(middleware.Recoverer)
+
 		api.Post("/signup", userH.SignUp)
 		api.Post("/login", userH.Login)
 
