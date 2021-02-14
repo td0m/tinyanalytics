@@ -26,7 +26,7 @@ func initServices(db *pgxpool.Pool, secret string) *services {
 		// referral: referral.NewService(),
 		user: user.NewService(user.NewDB(db), jwtS),
 		// page:     page.NewService(),
-		site: site.NewService(site.NewDB(db)),
-		// visit:    visit.NewService(),
+		site:  site.NewService(site.NewDB(db)),
+		visit: visit.NewService(visit.NewDB(db)),
 	}
 }

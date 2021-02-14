@@ -1,26 +1,23 @@
 package visit
 
 import (
-	"net"
-	"time"
-
 	model "github.com/td0m/tinyanalytics"
 )
 
 // Service interface
 type Service interface {
-	VisitPage(IP net.HardwareAddr, userAgent string) error
-	GetViews(page *model.Page, time time.Time, alltime bool) ([]model.ViewRow, error)
+	VisitPage(domain, path, ip, userAgent string) error
+	GetViews(page *model.Page, alltime bool) ([]model.ViewRow, error)
 }
 
-// DB interface
-type DB interface {
+// Store interface
+type Store interface {
 	VisitOrCreatePage(*model.Visit) error
 
 	SiteViewsAllTime(domain string) ([]model.ViewRow, error)
 	PageViewsAllTime(page *model.Page) ([]model.ViewRow, error)
-	SiteViewsInMonth(domain string, time time.Time) ([]model.ViewRow, error)
-	PageViewsInMonth(page *model.Page, time time.Time) ([]model.ViewRow, error)
+	SiteViewsInMonth(domain string) ([]model.ViewRow, error)
+	PageViewsInMonth(page *model.Page) ([]model.ViewRow, error)
 }
 
 // CacheMap is used to store ip addresses in the short term
