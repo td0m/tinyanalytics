@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/td0m/tinyanalytics/pkg/jwt"
 	"github.com/td0m/tinyanalytics/pkg/page"
 	"github.com/td0m/tinyanalytics/pkg/referral"
 	"github.com/td0m/tinyanalytics/pkg/site"
@@ -9,6 +11,7 @@ import (
 )
 
 type services struct {
+	jwt      *jwt.Service
 	referral referral.Service
 	user     user.Service
 	page     page.Service
@@ -16,13 +19,14 @@ type services struct {
 	visit    visit.Service
 }
 
-// func initServices(db *pgxpool.Pool, secret string) *services {
-// 	jwt := jwt.NewService(secret)
-// 	return &services{
-// 		referral: referral.NewService(),
-// 		user:     user.NewService(user.NewDB(db), jwt),
-// 		page:     page.NewService(),
-// 		site:     site.NewService(),
-// 		visit:    visit.NewService(),
-// 	}
-// }
+func initServices(db *pgxpool.Pool, secret string) *services {
+	jwtS := jwt.New(secret)
+	return &services{
+		jwt: jwtS,
+		// referral: referral.NewService(),
+		user: user.NewService(user.NewDB(db), jwtS),
+		// page:     page.NewService(),
+		// site:     site.NewService(),
+		// visit:    visit.NewService(),
+	}
+}

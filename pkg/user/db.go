@@ -8,26 +8,31 @@ import (
 	model "github.com/td0m/tinyanalytics"
 )
 
-type DBImpl struct {
+// DB instance
+type DB struct {
 	pool *pgxpool.Pool
 }
 
-func NewDB(pool *pgxpool.Pool) *DBImpl { return &DBImpl{pool} }
+var _ Store = &DB{}
+
+// NewDB creates a new DB
+func NewDB(pool *pgxpool.Pool) *DB { return &DB{pool} }
 
 const (
 	getUserByEmail = `SELECT * FROM "user" WHERE email=$1 AND pass=crypt($2, pass)`
-	createUser     = `INSERT INTO "user"(email, pass) VALUES($1,crypt($2, gen_salt('bf')))`
+	createUser     = `INSERT INTO "user"(email, pass) VALUES($1,crypt($2, gen_salt('bf'))) RETURNING *`
 )
 
-// GetUser gets a user by email, given that the passwords match
-func (db *DBImpl) GetUser(email string, password string) (user *model.User, err error) {
+// GetByEmailAndPassword gets a user by email, given that the passwords match
+func (db *DB) GetByEmailAndPassword(email string, password string) (user *model.User, err error) {
 	user = &model.User{}
 	err = pgxscan.Get(context.Background(), db.pool, user, getUserByEmail, email, password)
 	return
 }
 
 // CreateUser creates a new user
-func (db *DBImpl) CreateUser(email string, password string) error {
-	_, err := db.pool.Exec(context.Background(), createUser, email, password)
-	return err
+func (db *DB) CreateUser(email string, password string) (*model.User, error) {
+	user := &model.User{}
+	err := pgxscan.Get(context.Background(), db.pool, user, createUser, email, password)
+	return user, err
 }

@@ -20,10 +20,11 @@ func init() {
 }
 
 func main() {
-	// db, err := initDB(databaseURL)
-	// check(err)
+	db, err := initDB(databaseURL)
+	check(err)
 
-	// svc := initServices(db, secret)
+	svc := initServices(db, secret)
+	r := initHTTP(svc)
 
-	check(http.ListenAndServe(":"+port, nil))
+	check(http.ListenAndServe(":"+port, r))
 }
