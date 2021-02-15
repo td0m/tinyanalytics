@@ -1,6 +1,7 @@
 package visit
 
 import (
+	"errors"
 	"net"
 	"time"
 
@@ -9,13 +10,25 @@ import (
 
 // ServiceImpl represents the visit app service
 type ServiceImpl struct {
-	store Store
+	store   Store
+	ipCache CacheMap
 }
 
 // NewService creates a new visit app service
-func NewService(store Store) *ServiceImpl { return &ServiceImpl{store} }
+func NewService(store Store, ipMap CacheMap) *ServiceImpl {
+	return &ServiceImpl{store, ipMap}
+}
+
+// errors
+var (
+	ErrIPAlreadyVisited = errors.New("This IP already visited this page")
+)
 
 func (s *ServiceImpl) VisitPage(domain, path, ip, userAgent string) error {
+	success := s.ipCache.Store(ip + domain + path)
+	if !success {
+		return ErrIPAlreadyVisited
+	}
 	parsedIP := net.ParseIP(ip)
 	if parsedIP == nil {
 		parsedIP = []byte{0, 0, 0, 0}

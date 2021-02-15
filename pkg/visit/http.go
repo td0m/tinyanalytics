@@ -2,7 +2,6 @@ package visit
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -19,9 +18,7 @@ func NewHTTP(s Service) *HTTP { return &HTTP{s} }
 
 func (h *HTTP) Visit(w http.ResponseWriter, r *http.Request) {
 	userAgent := r.UserAgent()
-	fmt.Println(userAgent)
 	ip := r.RemoteAddr
-	// TODO: GET THE REAL IP TOO
 	domain := chi.URLParam(r, "domain")
 	path := chi.URLParam(r, "*")
 	err := h.s.VisitPage(domain, path, ip, userAgent)

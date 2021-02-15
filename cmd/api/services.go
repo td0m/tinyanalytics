@@ -1,7 +1,10 @@
 package main
 
 import (
+	"time"
+
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/td0m/tinyanalytics/pkg/cache"
 	"github.com/td0m/tinyanalytics/pkg/jwt"
 	"github.com/td0m/tinyanalytics/pkg/page"
 	"github.com/td0m/tinyanalytics/pkg/referral"
@@ -21,12 +24,13 @@ type services struct {
 
 func initServices(db *pgxpool.Pool, secret string) *services {
 	jwtS := jwt.New(secret)
+	ipCache := cache.NewMap(time.Hour * 24)
 	return &services{
 		jwt: jwtS,
 		// referral: referral.NewService(),
 		user: user.NewService(user.NewDB(db), jwtS),
 		// page:     page.NewService(),
 		site:  site.NewService(site.NewDB(db)),
-		visit: visit.NewService(visit.NewDB(db)),
+		visit: visit.NewService(visit.NewDB(db), ipCache),
 	}
 }
