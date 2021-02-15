@@ -43,6 +43,8 @@ func (s *ServiceImpl) GetViews(page *model.Page, alltime bool) ([]model.ViewRow,
 		return rows, err
 	}
 
+	// TODO: what about the index page? that will always have a length of 0
+	// maybe use * or - symbol?
 	switch alltime {
 	case true:
 		switch len(page.Path) {
@@ -52,7 +54,12 @@ func (s *ServiceImpl) GetViews(page *model.Page, alltime bool) ([]model.ViewRow,
 			rows, err = s.store.PageViewsAllTime(page)
 		}
 	default:
-		rows, err = s.store.SiteViewsInMonth(page.Domain)
+		switch len(page.Path) {
+		case 0:
+			rows, err = s.store.SiteViewsInMonth(page.Domain)
+		default:
+			rows, err = s.store.PageViewsInMonth(page)
+		}
 	}
 
 	return rows, err

@@ -71,5 +71,7 @@ func (db *DB) SiteViewsInMonth(domain string) ([]model.ViewRow, error) {
 }
 
 func (db *DB) PageViewsInMonth(page *model.Page) ([]model.ViewRow, error) {
-	panic("not implemented") // TODO: Implement
+	rows := []model.ViewRow{}
+	err := pgxscan.Select(context.Background(), db.pool, &rows, selectVisitsInMonth+byPage+groupByMonth, page.Domain, page.Path)
+	return rows, err
 }
