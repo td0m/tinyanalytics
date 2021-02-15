@@ -24,6 +24,7 @@ func initHTTP(svc *services) *chi.Mux {
 	r.Route("/api", func(api chi.Router) {
 		r.Use(middleware.DefaultLogger)
 		r.Use(middleware.Recoverer)
+		r.Use(middleware.SetHeader("Content-Type", "application/json"))
 
 		api.Post("/signup", userH.SignUp)
 		api.Post("/login", userH.Login)
@@ -33,6 +34,7 @@ func initHTTP(svc *services) *chi.Mux {
 			fmt.Fprintln(w, "You are signed in as", claims)
 		})
 
+		api.Get("/verification-code", siteH.GetConfirmationKey)
 		api.With(anyUser).Put("/sites/{domain}", siteH.Create)
 		api.With(middleware.RealIP).Post("/visit/{domain}/*", visitH.Visit)
 		// TODO: make this "owner" not "anyUser"

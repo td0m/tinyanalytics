@@ -25,3 +25,13 @@ func (h *HTTP) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(site)
 }
+
+func (h *HTTP) GetConfirmationKey(w http.ResponseWriter, r *http.Request) {
+	domain := r.URL.Query().Get("domain")
+	key, err := h.s.GetConfirmationKey(domain)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	w.Write([]byte(key))
+}
