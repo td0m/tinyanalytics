@@ -5,7 +5,12 @@ import (
 	"fmt"
 	"math/rand"
 	"sync"
+	"time"
 )
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
+}
 
 type RandomKeyVerifier struct {
 	m     map[string]string
