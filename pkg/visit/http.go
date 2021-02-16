@@ -20,7 +20,7 @@ func (h *HTTP) Visit(w http.ResponseWriter, r *http.Request) {
 	userAgent := r.UserAgent()
 	ip := r.RemoteAddr
 	domain := chi.URLParam(r, "domain")
-	path := chi.URLParam(r, "*")
+	path := "/" + chi.URLParam(r, "*")
 	referrer := r.URL.Query().Get("referrer")
 	err := h.s.VisitPage(domain, path, ip, userAgent, referrer)
 	if err != nil {
