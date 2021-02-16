@@ -25,5 +25,5 @@ func (v Visit) Validate() error {
 // ViewRow is a subset of Visit
 type ViewRow struct {
 	TimeBucket time.Time `db:"time_bucket" json:"time_bucket,omitempty"`
-	Views      int       `json:"views,omitempty"`
+	Views      int       `json:"views"`
 }

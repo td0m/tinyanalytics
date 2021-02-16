@@ -1,7 +1,7 @@
 package model
 
 type Referral struct {
-	From  Page
-	To    Page
-	Count int
+	From  Page `json:"from"`
+	To    Page `json:"to"`
+	Count int  `json:"count"`
 }

@@ -7,8 +7,8 @@ import (
 
 // Page model
 type Page struct {
-	Domain string
-	Path   string
+	Domain string `json:"domain"`
+	Path   string `json:"path"`
 }
 
 func (p *Page) Validate() error {
