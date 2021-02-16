@@ -31,3 +31,8 @@ func (u *User) Validate() error {
 	}
 	return nil
 }
+
+type UserWithSites struct {
+	User
+	Sites []string `json:"sites"`
+}

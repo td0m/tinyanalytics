@@ -26,12 +26,13 @@ func New(secret string) *Service {
 }
 
 // Generate generates a new jwt
-func (s *Service) Generate(email string) (string, error) {
+func (s *Service) Generate(email string, sites []string) (string, error) {
 	claims := Claims{
 		StandardClaims: jwt.StandardClaims{
 			Subject:   email,
 			ExpiresAt: time.Now().Add(expiresAfter).Unix(),
 		},
+		Sites: sites,
 	}
 	token := jwt.NewWithClaims(method, claims)
 	return token.SignedString(s.secret)
@@ -46,8 +47,13 @@ func (s *Service) Middleware() func(http.Handler) http.Handler {
 	}).Handler
 }
 
-func FromContext(ctx context.Context) string {
+func FromContext(ctx context.Context) (string, []string) {
 	token := ctx.Value("user").(*jwt.Token)
 	claims := token.Claims.(jwt.MapClaims)
-	return claims["sub"].(string)
+	siteInterfaces := claims["sites"].([]interface{})
+	sites := make([]string, len(siteInterfaces))
+	for i, s := range siteInterfaces {
+		sites[i] = s.(string)
+	}
+	return claims["sub"].(string), sites
 }

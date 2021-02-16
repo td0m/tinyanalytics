@@ -14,7 +14,6 @@ func TestUser_Validate(t *testing.T) {
 		fields  fields
 		wantErr bool
 	}{
-		// TODO: Add test cases.
 		{"fails on empty emails", fields{"", securePassword}, true},
 		{"fails on incomplete emails", fields{"dom", securePassword}, true},
 		{"fails on emails with only domain", fields{"@example.com", securePassword}, true},

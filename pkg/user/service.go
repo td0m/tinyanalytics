@@ -24,17 +24,17 @@ var (
 	ErrFailedtoCreate         = errors.New("Email might already be in use, or an internal error occured")
 )
 
-func (s *ServiceImpl) Login(email string, password string) (jwt string, u *model.User, err error) {
-	u = &model.User{Email: email, Pass: password}
-	if err = u.Validate(); err != nil {
+func (s *ServiceImpl) Login(email string, password string) (jwt string, u *model.UserWithSites, err error) {
+	user := model.User{Email: email, Pass: password}
+	if err = user.Validate(); err != nil {
 		return
 	}
-	u, err = s.db.GetByEmailAndPassword(u.Email, u.Pass)
+	u, err = s.db.GetByEmailAndPassword(user.Email, user.Pass)
 	if err != nil {
 		err = ErrInvalidEmailOrPassword
 		return
 	}
-	jwt, err = s.jwt.Generate(u.Email)
+	jwt, err = s.jwt.Generate(u.Email, u.Sites)
 	return
 }
 
@@ -48,7 +48,7 @@ func (s *ServiceImpl) SignUp(email string, password string) (jwt string, u *mode
 		log.Println(err)
 		return "", u, ErrFailedtoCreate
 	}
-	jwt, err = s.jwt.Generate(u.Email)
+	jwt, err = s.jwt.Generate(u.Email, []string{})
 	return
 }
 
