@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/td0m/tinyanalytics/pkg/jwt"
 	"github.com/td0m/tinyanalytics/pkg/site"
 	"github.com/td0m/tinyanalytics/pkg/user"
@@ -25,6 +26,7 @@ func initHTTP(svc *services) *chi.Mux {
 		r.Use(middleware.DefaultLogger)
 		r.Use(middleware.Recoverer)
 		r.Use(middleware.SetHeader("Content-Type", "application/json"))
+		r.Use(cors.AllowAll().Handler)
 
 		api.Post("/signup", userH.SignUp)
 		api.Post("/login", userH.Login)
