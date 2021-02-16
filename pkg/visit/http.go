@@ -21,7 +21,8 @@ func (h *HTTP) Visit(w http.ResponseWriter, r *http.Request) {
 	ip := r.RemoteAddr
 	domain := chi.URLParam(r, "domain")
 	path := chi.URLParam(r, "*")
-	err := h.s.VisitPage(domain, path, ip, userAgent)
+	referrer := r.URL.Query().Get("referrer")
+	err := h.s.VisitPage(domain, path, ip, userAgent, referrer)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
@@ -33,7 +34,7 @@ func (h *HTTP) ViewStats(w http.ResponseWriter, r *http.Request) {
 	domain := query.Get("domain")
 	path := query.Get("path")
 
-	rows, err := h.s.GetViews(&model.Page{Domain: domain, Path: path}, "alltime" == period)
+	rows, err := h.s.GetViews(model.Page{Domain: domain, Path: path}, "alltime" == period)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

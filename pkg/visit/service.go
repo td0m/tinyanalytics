@@ -25,7 +25,7 @@ var (
 	ErrIPAlreadyVisited = errors.New("This IP already visited this page")
 )
 
-func (s *ServiceImpl) VisitPage(domain, path, ip, userAgent string) error {
+func (s *ServiceImpl) VisitPage(domain, path, ip, userAgent, referrer string) error {
 	success := s.ipCache.Store(ip + domain + path)
 	if !success {
 		return ErrIPAlreadyVisited
@@ -35,7 +35,7 @@ func (s *ServiceImpl) VisitPage(domain, path, ip, userAgent string) error {
 		parsedIP = []byte{0, 0, 0, 0}
 	}
 	platform, browser := s.userAgentParser.Parse(userAgent)
-	visit := &model.Visit{
+	visit := model.Visit{
 		Time:     time.Now().Round(time.Second),
 		Domain:   domain,
 		Path:     path,
@@ -46,10 +46,14 @@ func (s *ServiceImpl) VisitPage(domain, path, ip, userAgent string) error {
 	if err := visit.Validate(); err != nil {
 		return err
 	}
-	return s.store.VisitOrCreatePage(visit)
+	referrerPage, err := model.NewPageFromURL(referrer)
+	if err != nil {
+		return err
+	}
+	return s.store.VisitOrCreatePage(visit, referrerPage)
 }
 
-func (s *ServiceImpl) GetViews(page *model.Page, alltime bool) ([]model.ViewRow, error) {
+func (s *ServiceImpl) GetViews(page model.Page, alltime bool) ([]model.ViewRow, error) {
 	var (
 		rows []model.ViewRow
 		err  error

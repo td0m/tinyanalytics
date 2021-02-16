@@ -5,6 +5,6 @@ CREATE TABLE referral(
   to_path TEXT NOT NULL,
   count INT NOT NULL DEFAULT 0,
 
-  FOREIGN KEY (from_domain, from_path) REFERENCES page(domain, path),
-  FOREIGN KEY (to_domain, to_path) REFERENCES page(domain, path)
+  FOREIGN KEY (to_domain, to_path) REFERENCES page(domain, path),
+  PRIMARY KEY (from_domain, from_path, to_domain, to_path)
 );

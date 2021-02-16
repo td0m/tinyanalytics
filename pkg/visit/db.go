@@ -24,20 +24,36 @@ const (
 	INSERT INTO page(domain,path)
 	VALUES($1,$2)
 	`
+	refer = `
+	INSERT INTO referral(from_domain, from_path, to_domain, to_path, count)
+	VALUES($1,$2,$3,$4,1)
+	ON CONFLICT(from_domain,from_path,to_domain,to_path) DO UPDATE SET count=referral.count+1
+	`
 )
 
 // NewDB creates a new visit store implementation in postgres
 func NewDB(pool *pgxpool.Pool) *DB { return &DB{pool} }
 
-func (db *DB) VisitOrCreatePage(v *model.Visit) error {
+func (db *DB) VisitOrCreatePage(v model.Visit, from model.Page) error {
 	_, err := db.pool.Exec(context.Background(), updateVisitors, v.Time, v.IP, v.Domain, v.Path, v.Browser, v.Platform)
+	tx, _ := db.pool.Begin(context.Background())
 	var pgxErr *pgconn.PgError
 	// on foreign key violation, probably means that the page does not exist
 	// TODO: is there a better way to check exactly what key is violated??
 	if errors.As(err, &pgxErr) && pgxErr.Code == pgerrcode.ForeignKeyViolation {
-		_, err := db.pool.Exec(context.Background(), createPage, v.Domain, v.Path)
+		_, err := tx.Exec(context.Background(), createPage, v.Domain, v.Path)
+		if err != nil {
+			return err
+		}
+	}
+	if err != nil {
 		return err
 	}
+	_, err = tx.Exec(context.Background(), refer, from.Domain, from.Path, v.Domain, v.Path)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit(context.Background())
 	return err
 }
 
@@ -58,7 +74,7 @@ func (db *DB) SiteViewsAllTime(domain string) ([]model.ViewRow, error) {
 	return rows, err
 }
 
-func (db *DB) PageViewsAllTime(page *model.Page) ([]model.ViewRow, error) {
+func (db *DB) PageViewsAllTime(page model.Page) ([]model.ViewRow, error) {
 	rows := []model.ViewRow{}
 	err := pgxscan.Select(context.Background(), db.pool, &rows, selectVisits+byPage, page.Domain, page.Path)
 	return rows, err
@@ -70,7 +86,7 @@ func (db *DB) SiteViewsInMonth(domain string) ([]model.ViewRow, error) {
 	return rows, err
 }
 
-func (db *DB) PageViewsInMonth(page *model.Page) ([]model.ViewRow, error) {
+func (db *DB) PageViewsInMonth(page model.Page) ([]model.ViewRow, error) {
 	rows := []model.ViewRow{}
 	err := pgxscan.Select(context.Background(), db.pool, &rows, selectVisitsInMonth+byPage+groupByMonth, page.Domain, page.Path)
 	return rows, err

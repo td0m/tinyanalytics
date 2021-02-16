@@ -6,18 +6,18 @@ import (
 
 // Service interface
 type Service interface {
-	VisitPage(domain, path, ip, userAgent string) error
-	GetViews(page *model.Page, alltime bool) ([]model.ViewRow, error)
+	VisitPage(domain, path, ip, userAgent, referrer string) error
+	GetViews(page model.Page, alltime bool) ([]model.ViewRow, error)
 }
 
 // Store interface
 type Store interface {
-	VisitOrCreatePage(*model.Visit) error
+	VisitOrCreatePage(model.Visit, model.Page) error
 
 	SiteViewsAllTime(domain string) ([]model.ViewRow, error)
-	PageViewsAllTime(page *model.Page) ([]model.ViewRow, error)
+	PageViewsAllTime(page model.Page) ([]model.ViewRow, error)
 	SiteViewsInMonth(domain string) ([]model.ViewRow, error)
-	PageViewsInMonth(page *model.Page) ([]model.ViewRow, error)
+	PageViewsInMonth(page model.Page) ([]model.ViewRow, error)
 }
 
 // CacheMap is used to store ip addresses in the short term
