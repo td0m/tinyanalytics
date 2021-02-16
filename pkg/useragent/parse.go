@@ -1,4 +1,4 @@
-package user_agent
+package useragent
 
 import (
 	"github.com/avct/uasurfer"
@@ -12,6 +12,7 @@ type Parser struct {
 // NewParser creates a new user_agent parser
 func NewParser() *Parser { return &Parser{} }
 
+// Parse parses a user agent string
 func (p *Parser) Parse(s string) (model.Platform, model.Browser) {
 	userAgent := uasurfer.Parse(s)
 	platform, browser := model.PlatformUnknown, model.BrowserUnknown

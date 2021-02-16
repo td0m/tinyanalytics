@@ -7,7 +7,7 @@ import (
 
 // Map ...
 type Map struct {
-	inner       map[string]time.Time
+	m           map[string]time.Time
 	mutex       sync.RWMutex
 	expireAfter time.Duration
 }
@@ -15,7 +15,7 @@ type Map struct {
 // NewMap creates a new cache map
 func NewMap(expireAfter time.Duration) *Map {
 	return &Map{
-		inner:       map[string]time.Time{},
+		m:           map[string]time.Time{},
 		expireAfter: expireAfter,
 	}
 }
@@ -25,7 +25,7 @@ func NewMap(expireAfter time.Duration) *Map {
 func (m *Map) Store(k string) bool {
 	// attempt to retreive the record
 	m.mutex.RLock()
-	expires, ok := m.inner[k]
+	expires, ok := m.m[k]
 	m.mutex.RUnlock()
 	if ok {
 		// check if timeframe has expired
@@ -37,6 +37,6 @@ func (m *Map) Store(k string) bool {
 	// assuming record cannot be retreived, store it
 	m.mutex.Lock()
 	defer m.mutex.Unlock()
-	m.inner[k] = time.Now().Add(m.expireAfter)
+	m.m[k] = time.Now().Add(m.expireAfter)
 	return true
 }
