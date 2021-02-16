@@ -11,9 +11,9 @@ type Page struct {
 	Path   string
 }
 
-// TODO: implement
 func (p *Page) Validate() error {
-	return nil
+	_, err := NewPageFromURL(p.Domain + p.Path)
+	return err
 }
 
 var (
