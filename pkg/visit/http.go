@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	model "github.com/td0m/tinyanalytics"
+	"github.com/td0m/tinyanalytics/pkg/jwt"
 )
 
 // HTTP contains visit HTTP endpoints
@@ -33,6 +34,11 @@ func (h *HTTP) ViewStats(w http.ResponseWriter, r *http.Request) {
 	period := query.Get("period")
 	domain := query.Get("domain")
 	path := query.Get("path")
+	_, sitesOwned := jwt.FromContext(r.Context())
+	if !contains(sitesOwned, domain) {
+		http.Error(w, "no permission to view this site", http.StatusUnauthorized)
+		return
+	}
 
 	rows, err := h.s.GetViews(model.Page{Domain: domain, Path: path}, "alltime" == period)
 	if err != nil {
@@ -40,4 +46,13 @@ func (h *HTTP) ViewStats(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	json.NewEncoder(w).Encode(rows)
+}
+
+func contains(arr []string, a string) bool {
+	for _, s := range arr {
+		if s == a {
+			return true
+		}
+	}
+	return false
 }

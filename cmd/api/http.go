@@ -39,7 +39,6 @@ func initHTTP(svc *services) *chi.Mux {
 		api.Get("/verification-code", siteH.GetConfirmationKey)
 		api.With(anyUser).Put("/sites/{domain}", siteH.Create)
 		api.With(middleware.RealIP).Post("/visit/{domain}/*", visitH.Visit)
-		// TODO: make this "owner" not "anyUser"
 		api.With(anyUser).Get("/views", visitH.ViewStats)
 	})
 
