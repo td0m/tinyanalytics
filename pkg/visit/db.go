@@ -35,14 +35,15 @@ const (
 func NewDB(pool *pgxpool.Pool) *DB { return &DB{pool} }
 
 func (db *DB) VisitOrCreatePage(v model.Visit, from model.Page) error {
-	_, err := db.pool.Exec(context.Background(), updateVisitors, v.Time, v.IP, v.Domain, v.Path, v.Browser, v.Platform)
 	tx, _ := db.pool.Begin(context.Background())
 	defer tx.Rollback(context.Background())
+	_, err := tx.Exec(context.Background(), updateVisitors, v.Time, v.IP, v.Domain, v.Path, v.Browser, v.Platform)
 	var pgxErr *pgconn.PgError
 	// on foreign key violation, probably means that the page does not exist
 	// TODO: is there a better way to check exactly what key is violated??
 	if errors.As(err, &pgxErr) && pgxErr.Code == pgerrcode.ForeignKeyViolation {
-		_, err := tx.Exec(context.Background(), createPage, v.Domain, v.Path)
+		tx, _ = db.pool.Begin(context.Background())
+		_, err := db.pool.Exec(context.Background(), createPage, v.Domain, v.Path)
 		if err != nil {
 			return err
 		}
