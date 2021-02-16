@@ -10,6 +10,7 @@ import (
 	"github.com/td0m/tinyanalytics/pkg/referral"
 	"github.com/td0m/tinyanalytics/pkg/site"
 	"github.com/td0m/tinyanalytics/pkg/user"
+	"github.com/td0m/tinyanalytics/pkg/user_agent"
 	"github.com/td0m/tinyanalytics/pkg/visit"
 )
 
@@ -25,12 +26,13 @@ type services struct {
 func initServices(db *pgxpool.Pool, secret string) *services {
 	jwtS := jwt.New(secret)
 	ipCache := cache.NewMap(time.Hour * 24)
+	uap := user_agent.NewParser()
 	return &services{
 		jwt: jwtS,
 		// referral: referral.NewService(),
 		user: user.NewService(user.NewDB(db), jwtS),
 		// page:     page.NewService(),
 		site:  site.NewService(site.NewDB(db)),
-		visit: visit.NewService(visit.NewDB(db), ipCache),
+		visit: visit.NewService(visit.NewDB(db), ipCache, uap),
 	}
 }

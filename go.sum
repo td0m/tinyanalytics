@@ -1,6 +1,8 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/auth0/go-jwt-middleware v1.0.0 h1:76t55qLQu3xjMFbkirbSCA8ZPcO1ny+20Uq1wkSTRDE=
 github.com/auth0/go-jwt-middleware v1.0.0/go.mod h1:nX2S0GmCyl087kdNSSItfOvMYokq5PSTG1yGIP5Le4U=
+github.com/avct/uasurfer v0.0.0-20191028135549-26b5daa857f1 h1:9h8f71kuF1pqovnn9h7LTHLEjxzyQaj0j1rQq5nsMM4=
+github.com/avct/uasurfer v0.0.0-20191028135549-26b5daa857f1/go.mod h1:noBAuukeYOXa0aXGqxr24tADqkwDO2KRD15FsuaZ5a8=
 github.com/cockroachdb/apd v1.1.0 h1:3LFP3629v+1aKXU5Q37mxmRxX/pIu1nijXydLShEq5I=
 github.com/cockroachdb/apd v1.1.0/go.mod h1:8Sl8LxpKi29FqWXR16WEFZRNSz3SoPzUzeMeY4+DwBQ=
 github.com/cockroachdb/cockroach-go/v2 v2.0.3 h1:ZA346ACHIZctef6trOTwBAEvPVm1k0uLm/bb2Atc+S8=

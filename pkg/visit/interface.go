@@ -29,5 +29,5 @@ type CacheMap interface {
 
 // UserAgentParser parses a HTTP user agent
 type UserAgentParser interface {
-	Parse(userAgent string) (model.Platform, model.Browser, error)
+	Parse(userAgent string) (model.Platform, model.Browser)
 }

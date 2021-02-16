@@ -10,13 +10,14 @@ import (
 
 // ServiceImpl represents the visit app service
 type ServiceImpl struct {
-	store   Store
-	ipCache CacheMap
+	store           Store
+	ipCache         CacheMap
+	userAgentParser UserAgentParser
 }
 
 // NewService creates a new visit app service
-func NewService(store Store, ipMap CacheMap) *ServiceImpl {
-	return &ServiceImpl{store, ipMap}
+func NewService(store Store, ipMap CacheMap, uap UserAgentParser) *ServiceImpl {
+	return &ServiceImpl{store, ipMap, uap}
 }
 
 // errors
@@ -33,13 +34,14 @@ func (s *ServiceImpl) VisitPage(domain, path, ip, userAgent string) error {
 	if parsedIP == nil {
 		parsedIP = []byte{0, 0, 0, 0}
 	}
+	platform, browser := s.userAgentParser.Parse(userAgent)
 	visit := &model.Visit{
 		Time:     time.Now().Round(time.Second),
 		Domain:   domain,
 		Path:     path,
 		IP:       parsedIP,
-		Platform: model.PlatformUnknown,
-		Browser:  model.BrowserUnknown,
+		Platform: platform,
+		Browser:  browser,
 	}
 	if err := visit.Validate(); err != nil {
 		return err
