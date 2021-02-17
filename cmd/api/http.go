@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
 	"github.com/td0m/tinyanalytics/pkg/jwt"
+	"github.com/td0m/tinyanalytics/pkg/referral"
 	"github.com/td0m/tinyanalytics/pkg/site"
 	"github.com/td0m/tinyanalytics/pkg/user"
 	"github.com/td0m/tinyanalytics/pkg/visit"
@@ -21,6 +22,7 @@ func initHTTP(svc *services) *chi.Mux {
 	userH := user.NewHTTP(svc.user)
 	siteH := site.NewHTTP(svc.site)
 	visitH := visit.NewHTTP(svc.visit)
+	refH := referral.NewHTTP(svc.referral)
 
 	r.Route("/api", func(api chi.Router) {
 		r.Use(middleware.DefaultLogger)
@@ -40,6 +42,7 @@ func initHTTP(svc *services) *chi.Mux {
 		api.With(anyUser).Put("/sites/{domain}", siteH.Create)
 		api.With(middleware.RealIP).Post("/visit/{domain}/*", visitH.Visit)
 		api.With(anyUser).Get("/views", visitH.ViewStats)
+		api.With(anyUser).Get("/referrals", refH.GetReferrals)
 	})
 
 	return r

@@ -7,8 +7,8 @@ type Service interface {
 	GetReferrals(domain string, path string) ([]model.Referral, error)
 }
 
-// DB interface
-type DB interface {
+// Store interface
+type Store interface {
 	ReferralsForSite(domain string) ([]model.Referral, error)
 	ReferralsForPage(domain string, path string) ([]model.Referral, error)
 }

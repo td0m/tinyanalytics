@@ -30,9 +30,9 @@ func initServices(db *pgxpool.Pool, secret, mmdb string) *services {
 	locator, err := visit.NewGeoLocator(mmdb)
 	check(err)
 	return &services{
-		jwt: jwtS,
-		// referral: referral.NewService(),
-		user: user.NewService(user.NewDB(db), jwtS),
+		jwt:      jwtS,
+		referral: referral.NewService(referral.NewDB(db)),
+		user:     user.NewService(user.NewDB(db), jwtS),
 		// page:     page.NewService(),
 		site:  site.NewService(site.NewDB(db)),
 		visit: visit.NewService(visit.NewDB(db), ipCache, uap, locator),
