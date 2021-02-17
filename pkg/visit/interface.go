@@ -1,6 +1,8 @@
 package visit
 
 import (
+	"net"
+
 	model "github.com/td0m/tinyanalytics"
 )
 
@@ -30,4 +32,8 @@ type CacheMap interface {
 // UserAgentParser parses a HTTP user agent
 type UserAgentParser interface {
 	Parse(userAgent string) (model.Platform, model.Browser)
+}
+
+type IPLocator interface {
+	Locate(ip net.IP) (*model.Location, error)
 }

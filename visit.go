@@ -12,7 +12,7 @@ type Visit struct {
 	Domain string
 	Path   string
 
-	Geo      Location
+	Geo      *Location
 	Browser  Browser
 	Platform Platform
 }

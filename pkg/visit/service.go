@@ -13,11 +13,12 @@ type ServiceImpl struct {
 	store           Store
 	ipCache         CacheMap
 	userAgentParser UserAgentParser
+	locator         IPLocator
 }
 
 // NewService creates a new visit app service
-func NewService(store Store, ipMap CacheMap, uap UserAgentParser) *ServiceImpl {
-	return &ServiceImpl{store, ipMap, uap}
+func NewService(store Store, ipMap CacheMap, uap UserAgentParser, locator IPLocator) *ServiceImpl {
+	return &ServiceImpl{store, ipMap, uap, locator}
 }
 
 // errors
@@ -34,6 +35,10 @@ func (s *ServiceImpl) VisitPage(domain, path, ip, userAgent, referrer string) er
 	if parsedIP == nil {
 		parsedIP = []byte{0, 0, 0, 0}
 	}
+	location, err := s.locator.Locate(parsedIP)
+	if err != nil {
+		return nil
+	}
 	platform, browser := s.userAgentParser.Parse(userAgent)
 	visit := model.Visit{
 		Time:     time.Now().Round(time.Second),
@@ -42,6 +47,7 @@ func (s *ServiceImpl) VisitPage(domain, path, ip, userAgent, referrer string) er
 		IP:       parsedIP,
 		Platform: platform,
 		Browser:  browser,
+		Geo:      location,
 	}
 	if err := visit.Validate(); err != nil {
 		return err

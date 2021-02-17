@@ -23,16 +23,18 @@ type services struct {
 	visit    visit.Service
 }
 
-func initServices(db *pgxpool.Pool, secret string) *services {
+func initServices(db *pgxpool.Pool, secret, mmdb string) *services {
 	jwtS := jwt.New(secret)
 	ipCache := cache.NewMap(time.Hour * 24)
 	uap := useragent.NewParser()
+	locator, err := visit.NewGeoLocator(mmdb)
+	check(err)
 	return &services{
 		jwt: jwtS,
 		// referral: referral.NewService(),
 		user: user.NewService(user.NewDB(db), jwtS),
 		// page:     page.NewService(),
 		site:  site.NewService(site.NewDB(db)),
-		visit: visit.NewService(visit.NewDB(db), ipCache, uap),
+		visit: visit.NewService(visit.NewDB(db), ipCache, uap, locator),
 	}
 }

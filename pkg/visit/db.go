@@ -18,8 +18,8 @@ type DB struct {
 
 const (
 	updateVisitors = `
-	INSERT INTO visit(time,ip,domain,path,browser,platform)
-	VALUES($1,$2,$3,$4,$5,$6) RETURNING *`
+	INSERT INTO visit(time,ip,domain,path,browser,platform,geo)
+	VALUES($1,$2,$3,$4,$5,$6,$7) RETURNING *`
 	createPage = `
 	INSERT INTO page(domain,path)
 	VALUES($1,$2)
@@ -37,7 +37,7 @@ func NewDB(pool *pgxpool.Pool) *DB { return &DB{pool} }
 func (db *DB) VisitOrCreatePage(v model.Visit, from model.Page) error {
 	tx, _ := db.pool.Begin(context.Background())
 	defer tx.Rollback(context.Background())
-	_, err := tx.Exec(context.Background(), updateVisitors, v.Time, v.IP, v.Domain, v.Path, v.Browser, v.Platform)
+	_, err := tx.Exec(context.Background(), updateVisitors, v.Time, v.IP, v.Domain, v.Path, v.Browser, v.Platform, v.Geo.PostgisString())
 	var pgxErr *pgconn.PgError
 	// on foreign key violation, probably means that the page does not exist
 	// TODO: is there a better way to check exactly what key is violated??
