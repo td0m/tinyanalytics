@@ -33,5 +33,7 @@ func (h *HTTP) GetConfirmationKey(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	w.Write([]byte(key))
+	json.NewEncoder(w).Encode(map[string]string{
+		"key": key,
+	})
 }
